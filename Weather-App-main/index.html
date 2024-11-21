@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <h2>WEATHER APP</h2>
+    <div id="main">
+    <input type="text" placeholder="Enter the city" id="input">
+    <button>Show Weather</button></div>
+    <div class="result"></div>
+
+    <script>
+        const input = document.querySelector("#input");
+        const button = document.querySelector("button");
+        const div = document.querySelector(".result");
+
+        function greetuser() {
+            const url = `https://api.weatherapi.com/v1/current.json?key=bca98c3b19fe432bbd5183555242111&q=${input.value}&aqi=no`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    const location = data.location;
+                    const current = data.current;
+
+                    div.innerHTML = ""; // Clear the previous results
+                    div.innerHTML += `
+                        <div id="weather">
+                            <h1>Country: <span id="country">${location.country}</span></h1>
+                            <h1>Location: <span id="location">${location.name}, ${location.region}</span></h1>
+                            <h1>Time: <span id="time">${location.localtime}</span></h1>
+                            <h1>Longitude: <span id="longitude">${location.lon}</span></h1>
+                            <h1>Temperature: <span id="temp">${current.temp_c}°C</span></h1>
+                            <h1>Weather: <span id="weatherCondition">${current.condition.text}</span> 
+                                <i id="weatherIcon" class="fa"></i>
+                            </h1>
+                        </div>
+                    `;
+
+                    const icon = document.getElementById("weatherIcon");
+                    const condition = current.condition.text.toLowerCase();
+
+                    if (condition.includes("sunny") || condition.includes("clear")) {
+                        icon.classList.add("fas", "fa-sun");
+                        div.classList.add("sunny");
+                    } else if (condition.includes("cloud")) {
+                        icon.classList.add("fas", "fa-cloud");
+                        div.classList.add("cloudy");
+                    } else if (condition.includes("rain")) {
+                        icon.classList.add("fas", "fa-cloud-rain");
+                        div.classList.add("rainy");
+                    } else if (condition.includes("snow")) {
+                        icon.classList.add("fas", "fa-snowflake");
+                        div.classList.add("snowy");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    div.innerHTML = "<p>Unable to fetch weather data. Please try again.</p>";
+                });
+        }
+
+        button.addEventListener("click", greetuser);
+    </script>
+</body>
+</html>
